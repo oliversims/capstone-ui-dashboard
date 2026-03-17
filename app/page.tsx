@@ -51,12 +51,14 @@ export default function HomePage() {
   const [esp32Ip, setEsp32Ip] = useState(DEFAULT_IP)
   const [savedIp, setSavedIp] = useState(DEFAULT_IP)
   const [status, setStatus] = useState<ConnectionStatus>("Offline")
-  const [lastUpdate, setLastUpdate] = useState("Never")
+const [lastUpdate, setLastUpdate] = useState<string>("Never")
 
-  const [telemetry, setTelemetry] = useState<SystemTelemetry>(defaultSystemTelemetry)
-  const [channels, setChannels] = useState<ChannelState[]>(defaultSystemTelemetry.pd.channels)
-  const [voltageHistory, setVoltageHistory] = useState<VoltageHistoryPoint[]>([])
-  const [eventLog, setEventLog] = useState(defaultSystemTelemetry.eventLog)
+const [telemetry, setTelemetry] = useState<SystemTelemetry>(defaultSystemTelemetry)
+const [channels, setChannels] = useState<ChannelState[]>(defaultSystemTelemetry.pd.channels)
+const [voltageHistory, setVoltageHistory] = useState<VoltageHistoryPoint[]>([])
+const [eventLog, setEventLog] = useState<SystemTelemetry["eventLog"]>(
+  defaultSystemTelemetry.eventLog
+)
 
   function addLog(source: string, target: string, action: string, result: string, notes?: string) {
     setEventLog((prev) => [
