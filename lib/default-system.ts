@@ -121,8 +121,6 @@ export const defaultSystemTelemetry: SystemTelemetry = {
     phaseDetected: "Unknown",
     neutralGroundStatus: "Unknown",
     freshness: "No live data yet",
-    current: null,
-    power: null,
   },
   security: {
     alarmActive: false,
