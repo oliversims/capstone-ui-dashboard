@@ -3,7 +3,6 @@ export type SessionState = "idle" | "armed" | "alarm" | "locked"
 export type ProtocolType = "ESP-NOW" | "LoRa" | "Wi-Fi Bridge" | "Unknown"
 export type CommandState = "on" | "off" | "pending" | "fault" | "no-ack"
 export type TestResult = "untested" | "passed" | "failed" | "wrong-circuit" | "retry"
-
 export interface APState {
   id: string
   name: string
@@ -13,7 +12,6 @@ export interface APState {
   operatorName: string
   lastHeartbeat: string
 }
-
 export interface CHState {
   id: string
   label: string
@@ -25,7 +23,6 @@ export interface CHState {
   lastHeartbeat: string
   bridgeProtocol: ProtocolType
 }
-
 export interface ChannelState {
   number: number
   label: string
@@ -40,7 +37,6 @@ export interface ChannelState {
   lastResponse: string
   testResult: TestResult
 }
-
 export interface PDState {
   id: string
   label: string
@@ -51,17 +47,13 @@ export interface PDState {
   channelCount: number
   channels: ChannelState[]
 }
-
 export interface MeasurementState {
   voltage: number | null
   continuityStatus: string
   phaseDetected: string
   neutralGroundStatus: string
   freshness: string
-  current: number | null
-  power: number | null
 }
-
 export interface SecurityState {
   alarmActive: boolean
   intrusionDetected: boolean
@@ -70,14 +62,12 @@ export interface SecurityState {
   killSignalReady: boolean
   lastAlarmTime: string | null
 }
-
 export interface CameraState {
   online: boolean
   latestImageUrl: string | null
   lastCaptureTime: string | null
   triggerSource: string | null
 }
-
 export interface EventLogEntry {
   id: string
   time: string
@@ -89,7 +79,6 @@ export interface EventLogEntry {
   phase?: "A" | "B" | "C"
   notes?: string
 }
-
 export interface SystemTelemetry {
   ap: APState
   ch: CHState
@@ -99,3 +88,4 @@ export interface SystemTelemetry {
   camera: CameraState
   eventLog: EventLogEntry[]
 }
+ 
