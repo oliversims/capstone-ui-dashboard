@@ -184,13 +184,15 @@ export default function HomePage() {
           },
         }
       })
-      setVoltageHistory((prev) => [
-        ...prev.slice(-19),
-        {
-          time: now,
-          voltage: Number(json.voltage ?? 0),
-        },
-      ])
+      if (json.voltage !== undefined && json.voltage !== null) {
+        setVoltageHistory((prev) => [
+          ...prev.slice(-19),
+          {
+            time: now,
+            voltage: Number(json.voltage),
+          },
+        ])
+      }
       setStatus("Connected")
       setLastUpdate(now)
     } catch (error) {
