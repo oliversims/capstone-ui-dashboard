@@ -46,6 +46,11 @@ function getActiveChannelCount(channels: ChannelState[]) {
     (channel) => channel.commandedState === "on" || channel.actualState === "on"
   ).length
 }
+function rssiToPercent(rssi: number): string {
+  if (rssi >= -50) return "100%"
+  if (rssi <= -100) return "0%"
+  return Math.round(((rssi + 100) / 50) * 100) + "%"
+}
 export default function HomePage() {
   const [esp32Ip, setEsp32Ip] = useState<string>("")
   const [savedIp, setSavedIp] = useState<string>("")
@@ -380,7 +385,7 @@ export default function HomePage() {
         </Card>
         <div className="grid gap-6 lg:grid-cols-2">
           <Card>
-            <CardContent className="space-y-4 p-5">
+            <CardContent className="space-y-3 p-5">
               <div>
                 <h2 className="text-lg font-semibold">Communication Hub</h2>
                 <p className="text-sm text-muted-foreground">
@@ -389,10 +394,6 @@ export default function HomePage() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <div className="text-sm text-muted-foreground">Hub ID</div>
-                  <div className="font-medium">{telemetry.ch.id}</div>
-                </div>
-                <div>
                   <div className="text-sm text-muted-foreground">Status</div>
                   <div className="font-medium">
                     {telemetry.ch.online ? "Online" : "Offline"}
@@ -400,17 +401,15 @@ export default function HomePage() {
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Signal Strength</div>
-                  <div className="font-medium">{telemetry.ch.signalStrength}%</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Heartbeat</div>
-                  <div className="font-medium">{telemetry.ch.lastHeartbeat}</div>
+                  <div className="font-medium">
+                    {telemetry.ch.online ? rssiToPercent(telemetry.ch.signalStrength) : "0%"}
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="space-y-4 p-5">
+            <CardContent className="space-y-3 p-5">
               <div>
                 <h2 className="text-lg font-semibold">Panel Device</h2>
                 <p className="text-sm text-muted-foreground">
@@ -419,30 +418,10 @@ export default function HomePage() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <div className="text-sm text-muted-foreground">PD ID</div>
-                  <div className="font-medium">{telemetry.pd.id}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Label</div>
-                  <div className="font-medium">{telemetry.pd.label}</div>
-                </div>
-                <div>
                   <div className="text-sm text-muted-foreground">Status</div>
                   <div className="font-medium">
                     {telemetry.pd.online ? "Online" : "Offline"}
                   </div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Protocol</div>
-                  <div className="font-medium">{telemetry.pd.protocol}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Heartbeat</div>
-                  <div className="font-medium">{telemetry.pd.lastHeartbeat}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Fault</div>
-                  <div className="font-medium">{telemetry.pd.fault ?? "None"}</div>
                 </div>
               </div>
             </CardContent>
