@@ -27,7 +27,7 @@ export interface ChannelState {
   number: number
   label: string
   phase: "A" | "B" | "C"
-  gpio: number
+  gpio: string
   enabled: boolean
   commandedState: CommandState
   actualState: CommandState
