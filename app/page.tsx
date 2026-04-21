@@ -24,7 +24,27 @@ import {
 type ConnectionStatus = "Connected" | "Offline" | "Connecting"
 type VoltageHistoryPoint = {
   time: string
-  voltage: number
+  voltage1: number
+  voltage2: number
+  voltage3: number
+  voltage4: number
+  voltage5: number
+  voltage6: number
+}
+
+type ChannelVoltageState = {
+  voltage1: number | null
+  voltage2: number | null
+  voltage3: number | null
+  voltage4: number | null
+  voltage5: number | null
+  voltage6: number | null
+  channel1Online: boolean
+  channel2Online: boolean
+  channel3Online: boolean
+  channel4Online: boolean
+  channel5Online: boolean
+  channel6Online: boolean
 }
 function mapChannelStateToLegacyStatus(
   channel: ChannelState
@@ -62,6 +82,20 @@ export default function HomePage() {
     useState<ChannelState[]>(defaultSystemTelemetry.pd.channels)
   const [voltageHistory, setVoltageHistory] =
     useState<VoltageHistoryPoint[]>([])
+  const [channelVoltages, setChannelVoltages] = useState<ChannelVoltageState>({
+    voltage1: null,
+    voltage2: null,
+    voltage3: null,
+    voltage4: null,
+    voltage5: null,
+    voltage6: null,
+    channel1Online: false,
+    channel2Online: false,
+    channel3Online: false,
+    channel4Online: false,
+    channel5Online: false,
+    channel6Online: false,
+  })
   const [eventLog, setEventLog] = useState<SystemTelemetry["eventLog"]>(
     defaultSystemTelemetry.eventLog
   )
@@ -102,6 +136,38 @@ export default function HomePage() {
       }
       const json = await res.json()
       const now = new Date().toLocaleTimeString()
+
+      // Extract channel voltages and online status
+      const newChannelVoltages: ChannelVoltageState = {
+        voltage1: json.voltage1 !== undefined ? Number(json.voltage1) : null,
+        voltage2: json.voltage2 !== undefined ? Number(json.voltage2) : null,
+        voltage3: json.voltage3 !== undefined ? Number(json.voltage3) : null,
+        voltage4: json.voltage4 !== undefined ? Number(json.voltage4) : null,
+        voltage5: json.voltage5 !== undefined ? Number(json.voltage5) : null,
+        voltage6: json.voltage6 !== undefined ? Number(json.voltage6) : null,
+        channel1Online: json.channel1 === true,
+        channel2Online: json.channel2 === true,
+        channel3Online: json.channel3 === true,
+        channel4Online: json.channel4 === true,
+        channel5Online: json.channel5 === true,
+        channel6Online: json.channel6 === true,
+      }
+      setChannelVoltages(newChannelVoltages)
+
+      // Update voltage history with all 6 channels
+      setVoltageHistory((prev) => [
+        ...prev.slice(-19),
+        {
+          time: now,
+          voltage1: newChannelVoltages.voltage1 ?? 0,
+          voltage2: newChannelVoltages.voltage2 ?? 0,
+          voltage3: newChannelVoltages.voltage3 ?? 0,
+          voltage4: newChannelVoltages.voltage4 ?? 0,
+          voltage5: newChannelVoltages.voltage5 ?? 0,
+          voltage6: newChannelVoltages.voltage6 ?? 0,
+        },
+      ])
+
       setTelemetry((prev) => {
         const updatedChannels: ChannelState[] = prev.pd.channels.map((channel) => {
           const channelKey = `channel${channel.number}`
@@ -189,15 +255,6 @@ export default function HomePage() {
           },
         }
       })
-      if (json.voltage !== undefined && json.voltage !== null) {
-        setVoltageHistory((prev) => [
-          ...prev.slice(-19),
-          {
-            time: now,
-            voltage: Number(json.voltage),
-          },
-        ])
-      }
       setStatus("Connected")
       setLastUpdate(now)
     } catch (error) {
@@ -308,6 +365,21 @@ export default function HomePage() {
     return () => clearInterval(interval)
   }, [savedIp])
   const activeChannelCount = getActiveChannelCount(channels)
+
+  // Get the first active channel for oscilloscope-style display
+  const getActiveChannelForDisplay = () => {
+    for (let i = 1; i <= 6; i++) {
+      const onlineKey = `channel${i}Online` as keyof ChannelVoltageState
+      if (channelVoltages[onlineKey]) {
+        return i
+      }
+    }
+    return 1 // Default to channel 1 if none are online
+  }
+
+  const displayChannelNumber = getActiveChannelForDisplay()
+  const displayChannelKey = `voltage${displayChannelNumber}` as keyof VoltageHistoryPoint
+
   return (
     <main className="min-h-screen bg-muted/30 p-6">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
@@ -513,10 +585,44 @@ export default function HomePage() {
                   Live readings reported by the current prototype device
                 </p>
               </div>
+
+              {/* All Channel Voltages Table */}
               <div>
-                <div className="text-sm text-muted-foreground">Voltage RMS</div>
+                <div className="mb-3 text-sm font-semibold">All Channel Voltages (Current):</div>
+                <div className="rounded-lg border">
+                  <div className="grid grid-cols-2 gap-4 p-4">
+                    {[1, 2, 3, 4, 5, 6].map((ch) => {
+                      const voltageKey = `voltage${ch}` as keyof ChannelVoltageState
+                      const onlineKey = `channel${ch}Online` as keyof ChannelVoltageState
+                      const voltage = channelVoltages[voltageKey]
+                      const isOnline = channelVoltages[onlineKey]
+                      const isOffline = !isOnline || voltage === null || voltage === 0
+
+                      return (
+                        <div
+                          key={ch}
+                          className={`flex items-center justify-between rounded-md p-3 ${
+                            isOffline ? "bg-muted/50 opacity-50" : ""
+                          }`}
+                        >
+                          <div className="text-sm font-medium">
+                            {isOnline && voltage !== null && voltage !== 0 ? "✓" : "✗"} Channel {ch}
+                          </div>
+                          <div className="text-sm font-semibold">
+                            {voltage !== null ? voltage.toFixed(2) : "--"} V
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Voltage RMS Chart - Oscilloscope Style */}
+              <div>
+                <div className="text-sm text-muted-foreground">Live Waveform - Channel {displayChannelNumber}</div>
                 <div className="text-xl font-semibold">
-                  {telemetry.measurements.voltage ?? "--"} V
+                  {channelVoltages[`voltage${displayChannelNumber}` as keyof ChannelVoltageState] ?? "--"} V
                 </div>
               </div>
               <div className="h-64 w-full min-w-0">
@@ -526,7 +632,7 @@ export default function HomePage() {
                     <XAxis dataKey="time" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="voltage" stroke="currentColor" />
+                    <Line type="monotone" dataKey={displayChannelKey} stroke="currentColor" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
