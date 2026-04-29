@@ -3,6 +3,8 @@ export type SessionState = "idle" | "armed" | "alarm" | "locked"
 export type ProtocolType = "ESP-NOW" | "LoRa" | "Wi-Fi Bridge" | "Unknown"
 export type CommandState = "on" | "off" | "pending" | "fault" | "no-ack"
 export type TestResult = "untested" | "passed" | "failed" | "wrong-circuit" | "retry"
+/** Panel channel phase label by channel index (1→A … 6→F). */
+export type ChannelPhaseLetter = "A" | "B" | "C" | "D" | "E" | "F"
 export interface APState {
   id: string
   name: string
@@ -26,7 +28,7 @@ export interface CHState {
 export interface ChannelState {
   number: number
   label: string
-  phase: "A" | "B" | "C"
+  phase: ChannelPhaseLetter
   gpio: string
   enabled: boolean
   commandedState: CommandState
@@ -76,7 +78,7 @@ export interface EventLogEntry {
   action: string
   result: string
   channelNumber?: number
-  phase?: "A" | "B" | "C"
+  phase?: ChannelPhaseLetter
   notes?: string
 }
 export interface SystemTelemetry {

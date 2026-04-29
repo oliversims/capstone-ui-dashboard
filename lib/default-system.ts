@@ -46,7 +46,7 @@ export const defaultSystemTelemetry: SystemTelemetry = {
       {
         number: 2,
         label: "Circuit 2",
-        phase: "A",
+        phase: "B",
         gpio: "GPIO 14",
         enabled: true,
         commandedState: "off",
@@ -60,7 +60,7 @@ export const defaultSystemTelemetry: SystemTelemetry = {
       {
         number: 3,
         label: "Circuit 3",
-        phase: "B",
+        phase: "C",
         gpio: "GPIO 15",
         enabled: true,
         commandedState: "off",
@@ -74,7 +74,7 @@ export const defaultSystemTelemetry: SystemTelemetry = {
       {
         number: 4,
         label: "Circuit 4",
-        phase: "B",
+        phase: "D",
         gpio: "RX2 (GPIO 16)",
         enabled: true,
         commandedState: "off",
@@ -88,7 +88,7 @@ export const defaultSystemTelemetry: SystemTelemetry = {
       {
         number: 5,
         label: "Circuit 5",
-        phase: "C",
+        phase: "E",
         gpio: "TX2 (GPIO 17)",
         enabled: true,
         commandedState: "off",
@@ -102,7 +102,7 @@ export const defaultSystemTelemetry: SystemTelemetry = {
       {
         number: 6,
         label: "Circuit 6",
-        phase: "C",
+        phase: "F",
         gpio: "GPIO 18",
         enabled: true,
         commandedState: "off",

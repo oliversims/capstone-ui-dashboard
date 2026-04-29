@@ -126,4 +126,17 @@
   html {
     @apply font-sans;
   }
+
+  /* Accessibility: visible focus indicators for keyboard navigation */
+  input:focus,
+  select:focus,
+  button:focus,
+  [role="button"]:focus {
+    @apply outline-2 outline-offset-2 outline-blue-500;
+  }
+
+  /* Link focus states */
+  a:focus {
+    @apply outline-2 outline-offset-1 outline-blue-500;
+  }
 }
